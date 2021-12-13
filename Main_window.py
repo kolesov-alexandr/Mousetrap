@@ -38,9 +38,13 @@ class MainMenuButton(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-    def update(self, *args):
-        # ну тут будет как раз это изменение
-        pass
+    def update(self, mouse_pos):
+        x, y = mouse_pos
+        if (x in range(self.rect[0], self.rect[0] + self.rect.x)
+                and y in range(self.rect[1], self.rect[1] + self.rect.y)):
+            self.image = load_image("main_menu_button_1.png")
+        else:
+            self.image = load_image("main_menu_button_0.png")
 
 
 if __name__ == '__main__':
@@ -55,6 +59,8 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.MOUSEMOTION:
+                button_sprites.update(event.pos)
         screen.fill((0, 0, 0))
         button_sprites.draw(screen)
         pygame.display.flip()
