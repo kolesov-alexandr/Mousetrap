@@ -27,10 +27,11 @@ class MainMenuButton(pygame.sprite.Sprite):
     # для кнопок должно быть 2 картинки, одна светлая, другая темнее
     # когда мышка будет наводится на кнопку надо чтобы одна картинка меняла другую
     # и когда мышка уводится с кнопки обратно на первую
-    def __init__(self, *group):
+    def __init__(self, picture_name, *group):
         super().__init__(*group)
-        self.image = load_image("main_menu_button_0.png")
+        self.image = load_image(picture_name)
         self.rect = self.image.get_rect()
+        self.stack = 0
         # инициализация
 
     def set_coords(self, x, y):
@@ -38,13 +39,22 @@ class MainMenuButton(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-    def update(self, mouse_pos):
-        x, y = mouse_pos
-        if (x in range(self.rect[0], self.rect[0] + self.rect.x)
-                and y in range(self.rect[1], self.rect[1] + self.rect.y)):
-            self.image = load_image("main_menu_button_1.png")
+
+class PlayGameButton(MainMenuButton):
+    def __init__(self, *group):
+        super().__init__("play1.png", *group)
+
+    def update(self, mouse_position):
+        x, y = mouse_position
+        if (x in range(self.rect[0], self.rect[0] + self.rect[2])
+                and y in range(self.rect[1], self.rect[1] + self.rect[3])):
+            if self.stack == 0:
+                self.image = load_image("play2.png")
+            else:
+                self.image = load_image("play3.png")
+            self.stack = (self.stack + 1) % 2
         else:
-            self.image = load_image("main_menu_button_0.png")
+            self.image = load_image("play1.png")
 
 
 if __name__ == '__main__':
@@ -52,17 +62,20 @@ if __name__ == '__main__':
     size = width, height = 1024, 1024
     screen = pygame.display.set_mode(size)
     button_sprites = pygame.sprite.Group()
-    button_1 = MainMenuButton(button_sprites)
+    button_1 = PlayGameButton(button_sprites)
     button_1.set_coords(500, 500)
     running = True
+    timer = pygame.time.Clock()
+    mouse_pos = (0, 0)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEMOTION:
-                button_sprites.update(event.pos)
+                mouse_pos = event.pos
+        button_sprites.update(mouse_pos)
         screen.fill((0, 0, 0))
         button_sprites.draw(screen)
         pygame.display.flip()
-
+        timer.tick(2)
     pygame.quit()
