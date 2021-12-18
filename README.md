@@ -1,11 +1,14 @@
 # Название: MouseTrap
 
-# Логотип: здесь будет кот, нарисуем
+# Логотип: ![](https://psv4.userapi.com/c235031/u246881100/docs/d20/0d7c19f73f31/knopka.png?extra=DuuMIejbggbwuOJ9zdsRzdUL3OGaJ36gyfTo9CHI1lrU_BOmnlp5UuZP59btgOs2-PEtZ4ENxznaHvctLOhXi_brr-7begVPUMO5OwGvwfjJIoDURMluxlvZ23MqpEcjiR0JutVlCu3yaldiMBuX-bD7DA)
 
 # Авторы проекта:
 + Колесов Александр
 + Мешкова Алиса
 + Пестич Андрей
+
+# Художник:
++ [Холеева Лолита](https://vk.com/goose_meow)
 
 # Описание: 
  игра “Мышеловка” относится к ритм-играм, включая по
