@@ -22,6 +22,28 @@ def load_image(name, colorkey=None):
 # ну вот тут обычная функция загрузки изображения
 
 
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def main_menu():
+    mouse_pos = (0, 0)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.MOUSEMOTION:
+                mouse_pos = event.pos
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                button_sprites.update(mouse_pos, event)
+        button_sprites.update(mouse_pos)
+        screen.fill((0, 0, 0))
+        button_sprites.draw(screen)
+        pygame.display.flip()
+        timer.tick(7)
+
+
 class MainMenuButton(pygame.sprite.Sprite):
     # это класс для кнопок в главном меню
     # для кнопок должно быть 2 картинки, одна светлая, другая темнее
@@ -31,7 +53,6 @@ class MainMenuButton(pygame.sprite.Sprite):
         super().__init__(*group)
         self.image = load_image(picture_name)
         self.rect = self.image.get_rect()
-        self.stack = 0
         # инициализация
 
     def set_coords(self, x, y):
@@ -41,41 +62,37 @@ class MainMenuButton(pygame.sprite.Sprite):
 
 
 class PlayGameButton(MainMenuButton):
-    def __init__(self, *group):
-        super().__init__("play1.png", *group)
+    def __init__(self, names, next_window, *group):
+        super().__init__(names[0], *group)
+        self.names = names
+        self.next_window = next_window
+        self.stack = 0
 
-    def update(self, mouse_position):
-        x, y = mouse_position
+    def update(self, *args):
+        x, y = args[0]
         if (x in range(self.rect[0], self.rect[0] + self.rect[2])
                 and y in range(self.rect[1], self.rect[1] + self.rect[3])):
             if self.stack == 0:
-                self.image = load_image("play2.png")
+                self.image = load_image(self.names[1])
             else:
-                self.image = load_image("play3.png")
+                self.image = load_image(self.names[2])
             self.stack = (self.stack + 1) % 2
+            if len(args) == 2 and args[1].type == pygame.MOUSEBUTTONDOWN:
+                if self.next_window == 'exit':
+                    terminate()
         else:
-            self.image = load_image("play1.png")
+            self.image = load_image(self.names[0])
 
 
 if __name__ == '__main__':
     pygame.init()
-    size = width, height = 1024, 1024
+    size = width, height = 1200, 900
     screen = pygame.display.set_mode(size)
     button_sprites = pygame.sprite.Group()
-    button_1 = PlayGameButton(button_sprites)
+    button_1 = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'game_window', button_sprites)
     button_1.set_coords(500, 500)
-    running = True
+    button_1 = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
+    button_1.set_coords(500, 600)
     timer = pygame.time.Clock()
-    mouse_pos = (0, 0)
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEMOTION:
-                mouse_pos = event.pos
-        button_sprites.update(mouse_pos)
-        screen.fill((0, 0, 0))
-        button_sprites.draw(screen)
-        pygame.display.flip()
-        timer.tick(2)
+    main_menu()
     pygame.quit()
