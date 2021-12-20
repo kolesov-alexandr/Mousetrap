@@ -1,6 +1,8 @@
 import pygame
 import os
 import sys
+
+
 # ну тут сверху надеюсь все понятно
 
 
@@ -19,6 +21,8 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
         return image
+
+
 # ну вот тут обычная функция загрузки изображения
 
 
@@ -89,10 +93,11 @@ if __name__ == '__main__':
     size = width, height = 1200, 900
     screen = pygame.display.set_mode(size)
     button_sprites = pygame.sprite.Group()
-    button_1 = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'game_window', button_sprites)
-    button_1.set_coords(500, 500)
-    button_1 = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
-    button_1.set_coords(500, 600)
+    play_button = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'name_window',
+                              button_sprites)
+    play_button.set_coords(500, 500)
+    exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
+    exit_button.set_coords(500, 600)
     timer = pygame.time.Clock()
     main_menu()
     pygame.quit()
