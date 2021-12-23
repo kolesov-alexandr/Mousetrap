@@ -32,6 +32,9 @@ def terminate():
 
 
 def main_menu():
+    pygame.mixer.music.load("data/Mantis.mp3")
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play()
     mouse_pos = (0, 0)
     while True:
         for event in pygame.event.get():
@@ -90,14 +93,14 @@ class PlayGameButton(MainMenuButton):
 
 if __name__ == '__main__':
     pygame.init()
-    size = width, height = 1200, 900
+    size = width, height = 450, 650
     screen = pygame.display.set_mode(size)
     button_sprites = pygame.sprite.Group()
     play_button = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'name_window',
-                              button_sprites)
-    play_button.set_coords(500, 500)
+                                 button_sprites)
+    play_button.set_coords(150, 100)
     exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
-    exit_button.set_coords(500, 600)
+    exit_button.set_coords(150, 500)
     timer = pygame.time.Clock()
     main_menu()
     pygame.quit()
