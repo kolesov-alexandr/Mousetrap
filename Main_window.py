@@ -93,14 +93,14 @@ class PlayGameButton(MainMenuButton):
 
 if __name__ == '__main__':
     pygame.init()
-    size = width, height = 450, 650
+    size = width, height = 450, 550
     screen = pygame.display.set_mode(size)
     button_sprites = pygame.sprite.Group()
     play_button = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'name_window',
                                  button_sprites)
     play_button.set_coords(150, 100)
     exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
-    exit_button.set_coords(150, 500)
+    exit_button.set_coords(150, 400)
     timer = pygame.time.Clock()
     main_menu()
     pygame.quit()
