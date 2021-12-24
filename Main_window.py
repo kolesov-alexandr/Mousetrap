@@ -45,7 +45,7 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 button_sprites.update(mouse_pos, event)
         button_sprites.update(mouse_pos)
-        screen.fill((255, 255, 255))
+        screen.fill(pygame.Color("mediumblue"))
         button_sprites.draw(screen)
         pygame.display.flip()
         timer.tick(7)
@@ -68,20 +68,6 @@ class MainMenuButton(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-class VolumeButton(MainMenuButton):
-    def init(self, names, *group):
-        super().init(names[0], *group)
-        self.names = names
-        self.stack = 0
-
-    def update(self, *args):
-        x, y = args[0]
-        if (x in range(self.rect[0], self.rect[0] + self.rect[2])
-                and y in range(self.rect[1], self.rect[1] + self.rect[3])):
-            if self.stack == 0:
-                pass
-
-
 class PlayGameButton(MainMenuButton):
     def __init__(self, names, next_window, *group):
         super().__init__(names[0], *group)
@@ -89,16 +75,14 @@ class PlayGameButton(MainMenuButton):
         self.next_window = next_window
         self.stack = 0
 
-    def update(self, *args):
-        x, y = args[0]
-        if (x in range(self.rect[0], self.rect[0] + self.rect[2])
-                and y in range(self.rect[1], self.rect[1] + self.rect[3])):
+    def update(self, mouse_pos, *args):
+        if self.rect.collidepoint(mouse_pos):
             if self.stack == 0:
                 self.image = load_image(self.names[1])
             else:
                 self.image = load_image(self.names[2])
             self.stack = (self.stack + 1) % 2
-            if len(args) == 2 and args[1].type == pygame.MOUSEBUTTONDOWN:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN:
                 if self.next_window == 'exit':
                     terminate()
         else:
@@ -115,8 +99,6 @@ if __name__ == '__main__':
     play_button.set_coords(150, 100)
     exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
     exit_button.set_coords(150, 400)
-    volume_button = VolumeButton(('sound_on.png','sound_off.png'), button_sprites)
-    volume_button.set_coords()
     timer = pygame.time.Clock()
     main_menu()
     pygame.quit()
