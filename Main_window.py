@@ -46,9 +46,19 @@ def main_menu():
                 button_sprites.update(mouse_pos, event)
         button_sprites.update(mouse_pos)
         screen.fill(pygame.Color("mediumblue"))
+        back_ground_sprites_1.draw(screen)
         button_sprites.draw(screen)
         pygame.display.flip()
         timer.tick(7)
+
+
+def option_window():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+        screen.fill(pygame.Color("mediumblue"))
+        pygame.display.flip()
 
 
 class MainMenuButton(pygame.sprite.Sprite):
@@ -85,6 +95,8 @@ class PlayGameButton(MainMenuButton):
             if args and args[0].type == pygame.MOUSEBUTTONDOWN:
                 if self.next_window == 'exit':
                     terminate()
+                if self.next_window == 'option_window':
+                    option_window()
         else:
             self.image = load_image(self.names[0])
 
@@ -94,11 +106,23 @@ if __name__ == '__main__':
     size = width, height = 450, 550
     screen = pygame.display.set_mode(size)
     button_sprites = pygame.sprite.Group()
+
+    back_ground_sprites_1 = pygame.sprite.Group()
+    back_ground_1 = pygame.sprite.Sprite(back_ground_sprites_1)
+    back_ground_1.image = load_image('back_ground_1.png')
+    back_ground_1.rect = back_ground_1.image.get_rect()
+    back_ground_1.rect.x = 0
+    back_ground_1.rect.y = 0
+
     play_button = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'name_window',
                                  button_sprites)
-    play_button.set_coords(150, 100)
+    play_button.set_coords(150, 50)
+    options_button = PlayGameButton(('options1.png', 'options2.png', 'options3.png'), 'option_window',
+                                    button_sprites)
+    options_button.set_coords(150, 150)
     exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
-    exit_button.set_coords(150, 400)
+    exit_button.set_coords(150, 350)
+
     timer = pygame.time.Clock()
     main_menu()
     pygame.quit()
