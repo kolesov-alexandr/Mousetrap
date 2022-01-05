@@ -88,7 +88,7 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 button_sprites.update(mouse_pos, event)
         button_sprites.update(mouse_pos)
-        screen.fill(pygame.Color("goldenrod"))
+        screen.fill(pygame.Color("magenta"))
         button_sprites.draw(screen)
         pygame.display.flip()
         timer.tick(7)
@@ -96,7 +96,20 @@ def main_menu():
 
 def loading_window():
     rabbit = load_image("rabbit.png")
-    screen.blit(rabbit, (10, 10))
+    screen.blit(rabbit, (50, 100))
+    font = pygame.font.Font(None, 30)
+    text1 = font.render("Wonderland Engine", True, pygame.Color("yellow"))
+    text1_x = 250
+    text1_y = 200
+    screen.blit(text1, (text1_x, text1_y))
+    text2 = font.render("X", True, pygame.Color("yellow"))
+    text2_x = text1_x + text1.get_width() // 2 - text2.get_width() // 2
+    text2_y = text1_y + 50
+    screen.blit(text2, (text2_x, text2_y))
+    text3 = font.render("PyGame", True, pygame.Color("yellow"))
+    text3_x = text2_x + text2.get_width() // 2 - text3.get_width() // 2
+    text3_y = text2_y + 50
+    screen.blit(text3, (text3_x, text3_y))
     pygame.display.flip()
     count = 0
     while True:
@@ -114,7 +127,7 @@ if __name__ == '__main__':
     pygame.init()
     size = width, height = 450, 550
     screen = pygame.display.set_mode(size)
-    screen.fill(pygame.Color("goldenrod"))
+    screen.fill(pygame.Color("magenta"))
     button_sprites = pygame.sprite.Group()
     timer = pygame.time.Clock()
     loading_window()
