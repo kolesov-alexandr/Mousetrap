@@ -31,26 +31,6 @@ def terminate():
     sys.exit()
 
 
-def main_menu():
-    pygame.mixer.music.load("data/Mantis.mp3")
-    pygame.mixer.music.set_volume(0.1)
-    pygame.mixer.music.play()
-    mouse_pos = (0, 0)
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            if event.type == pygame.MOUSEMOTION:
-                mouse_pos = event.pos
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                button_sprites.update(mouse_pos, event)
-        button_sprites.update(mouse_pos)
-        screen.fill(pygame.Color("mediumblue"))
-        button_sprites.draw(screen)
-        pygame.display.flip()
-        timer.tick(7)
-
-
 class MainMenuButton(pygame.sprite.Sprite):
     # это класс для кнопок в главном меню
     # для кнопок должно быть 2 картинки, одна светлая, другая темнее
@@ -89,16 +69,54 @@ class PlayGameButton(MainMenuButton):
             self.image = load_image(self.names[0])
 
 
-if __name__ == '__main__':
-    pygame.init()
-    size = width, height = 450, 550
-    screen = pygame.display.set_mode(size)
-    button_sprites = pygame.sprite.Group()
+def main_menu():
     play_button = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'name_window',
                                  button_sprites)
     play_button.set_coords(150, 100)
     exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
     exit_button.set_coords(150, 400)
+    pygame.mixer.music.load("data/Mantis.mp3")
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play()
+    mouse_pos = (0, 0)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.MOUSEMOTION:
+                mouse_pos = event.pos
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                button_sprites.update(mouse_pos, event)
+        button_sprites.update(mouse_pos)
+        screen.fill(pygame.Color("goldenrod"))
+        button_sprites.draw(screen)
+        pygame.display.flip()
+        timer.tick(7)
+
+
+def loading_window():
+    rabbit = load_image("rabbit.png")
+    screen.blit(rabbit, (10, 10))
+    pygame.display.flip()
+    count = 0
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+        if count < 5:
+            count += 1 * timer.tick() / 1000
+        else:
+            return
+        pygame.display.flip()
+
+
+if __name__ == '__main__':
+    pygame.init()
+    size = width, height = 450, 550
+    screen = pygame.display.set_mode(size)
+    screen.fill(pygame.Color("goldenrod"))
+    button_sprites = pygame.sprite.Group()
     timer = pygame.time.Clock()
+    loading_window()
     main_menu()
     pygame.quit()
