@@ -51,9 +51,50 @@ def main_menu():
         timer.tick(7)
 
 
-class MainMenuButton(pygame.sprite.Sprite):
+def game():
+    global screen
+    screen = pygame.display.set_mode((600, 500))
+
+    obstacle_event = pygame.USEREVENT + 1
+
+    level = [0, 1, 0, 1, 0, 0, 0, 0]
+    counter = 0
+    counter_max = len(level)
+
+    pygame.time.set_timer(obstacle_event, 1000)
+
+    up = False
+    down = False
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    up = True
+                if event.key == pygame.K_DOWN:
+                    down = True
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP:
+                    up = False
+                if event.key == pygame.K_DOWN:
+                    down = False
+            if event.type == obstacle_event:
+                if counter < counter_max:
+                    create_obstacle(level, counter)
+                    counter += 1
+        obstacle_sprites.update()
+        cat_sprites.update(up, down)
+        screen.fill(pygame.Color("mediumblue"))
+        game_object_sprites.draw(screen)
+        cat_sprites.draw(screen)
+        pygame.display.flip()
+        timer.tick(60)
+
+
+class MainSprite(pygame.sprite.Sprite):
     # это класс для кнопок в главном меню
-    # для кнопок должно быть 2 картинки, одна светлая, другая темнее
+    # для кнопок должно быть 2 картинки
     # когда мышка будет наводится на кнопку надо чтобы одна картинка меняла другую
     # и когда мышка уводится с кнопки обратно на первую
     def __init__(self, picture_name, *group):
@@ -68,7 +109,7 @@ class MainMenuButton(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-class PlayGameButton(MainMenuButton):
+class Button(MainSprite):
     def __init__(self, names, next_window, *group):
         super().__init__(names[0], *group)
         self.names = names
@@ -85,20 +126,74 @@ class PlayGameButton(MainMenuButton):
             if args and args[0].type == pygame.MOUSEBUTTONDOWN:
                 if self.next_window == 'exit':
                     terminate()
+                if self.next_window == 'play':
+                    game()
         else:
             self.image = load_image(self.names[0])
+
+
+class Cat(MainSprite):
+    def __init__(self):
+        super().__init__('cat.png', game_object_sprites, cat_sprites)
+        self.up = False
+        self.down = False
+
+    def update(self, *orders):
+        if orders[0]:
+            self.set_coords(100, 100)
+            self.up = True
+            self.down = False
+
+        elif orders[1]:
+            self.set_coords(100, 300)
+            self.up = False
+            self.down = True
+        else:
+            self.set_coords(100, 300)
+            self.up = False
+            self.down = False
+
+    def status(self):
+        return self.up, self.down
+
+
+class Obstacle(MainSprite):
+    def __init__(self, pos):
+        super().__init__('obstacle.png', game_object_sprites, obstacle_sprites)
+        self.set_coords(pos[0], pos[1])
+
+    def update(self, *orders):
+        self.rect = self.rect.move(-20, 0)
+        if pygame.sprite.spritecollideany(self, cat_sprites) and (cat.status()[0] or cat.status()[1]):
+            self.kill()
+
+
+def create_obstacle(level, i):
+    if level[i] == 0:
+        Obstacle((400, 100))
+    else:
+        Obstacle((400, 300))
 
 
 if __name__ == '__main__':
     pygame.init()
     size = width, height = 450, 550
     screen = pygame.display.set_mode(size)
+
     button_sprites = pygame.sprite.Group()
-    play_button = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'name_window',
-                                 button_sprites)
+    game_object_sprites = pygame.sprite.Group()
+    cat_sprites = pygame.sprite.Group()
+    obstacle_sprites = pygame.sprite.Group()
+
+    cat = Cat()
+    cat.set_coords(100, 300)
+
+    play_button = Button(('play1.png', 'play2.png', 'play3.png'), 'play', button_sprites)
     play_button.set_coords(150, 100)
-    exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
+
+    exit_button = Button(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
     exit_button.set_coords(150, 400)
+
     timer = pygame.time.Clock()
     main_menu()
     pygame.quit()
