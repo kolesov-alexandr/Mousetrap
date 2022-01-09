@@ -1,35 +1,55 @@
 import sys
 import sqlite3
-
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
-from records import Ui_MainWindow
-from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
-from PyQt5.QtWidgets import QWidget, QTableView, QApplication
+import pygame
 
 
-class MyWidget(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-        self.con = sqlite3.connect('data/records.sqlite')
-        self.rec()
+def terminate():
+    pygame.quit()
+    sys.exit()
 
 
-    def rec(self):
-        # вывод таблицы с рекордами
-        cur = self.con.cursor()
-        result = cur.execute("""SELECT name, kol_vo_score FROM records
-            ORDER BY kol_vo_score DESC""").fetchall()
-        self.results_table_widget.setColumnCount(2)
-        self.results_table_widget.setRowCount(0)
-        self.results_table_widget.setHorizontalHeaderLabels(["Имя", "Счет"])
-        for i, row in enumerate(result):
-            self.results_table_widget.setRowCount(self.results_table_widget.rowCount() + 1)
-            for j, elem in enumerate(row):
-                self.results_table_widget.setItem(i, j, QTableWidgetItem(str(elem)))
+def rec():
+    # вывод таблицы с рекордами
+    con = sqlite3.connect('data/records.sqlite')
+    cur = con.cursor()
+    result = list(sorted(cur.execute("""SELECT name, kol_vo_score FROM records
+            ORDER BY kol_vo_score DESC""").fetchall(), key=lambda elem: elem[1]))
+
+    font = pygame.font.Font(None, 30)
+    font_header = pygame.font.Font(None, 40)
+    header_player = font_header.render("Игрок", True, pygame.Color('cyan'))
+    screen.blit(header_player, (95, 45))
+
+    header_score = font_header.render("Очки", True, pygame.Color('cyan'))
+    screen.blit(header_score, (95 + header_player.get_width() + 115, 45))
+    height0 = 45 + 50
+    for i in range(10):
+        if i < len(result):
+            player = font.render(result[i][0], True, pygame.Color('cyan'))
+            screen.blit(player, (95 + 15, height0))
+
+            score = font.render('{:04}'.format(result[i][1]), True, pygame.Color('cyan'))
+            screen.blit(score, (95 + header_player.get_width() + 115 + 12, height0))
+
+        else:
+            player = font.render('NON', True, pygame.Color('cyan'))
+            screen.blit(player, (95 + 15, height0))
+
+            score = font.render('{:04}'.format(0), True, pygame.Color('cyan'))
+            screen.blit(score, (95 + header_player.get_width() + 115 + 12, height0))
+        height0 += 41
+    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                con.close()
+                terminate()
+
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = MyWidget()
-    ex.show()
-    sys.exit(app.exec_())
+    pygame.init()
+    size = width, height = 450, 550
+    screen = pygame.display.set_mode(size)
+    button_sprites = pygame.sprite.Group()
+    rec()
+    pygame.quit()
