@@ -2,6 +2,8 @@ import pygame
 import os
 import sys
 
+CURRENT_VOLUME = 0.1
+
 
 # ну тут сверху надеюсь все понятно
 
@@ -101,6 +103,23 @@ class PlayGameButton(MainMenuButton):
             self.image = load_image(self.names[0])
 
 
+class OptionsButton(MainMenuButton):
+    def __init__(self, name, sound, *group):
+        super().__init__(name, *group)
+        self.sound = sound
+
+    def update(self, mouse_pos, *args):
+        if self.rect.collidepoint(mouse_pos):
+            if self.sound == 'up':
+                if CURRENT_VOLUME < 1:
+                    CURRENT_VOLUME += 0.1
+                    pygame.mixer.music.set_volume(CURRENT_VOLUME)
+            else:
+                if CURRENT_VOLUME > 0.1:
+                    CURRENT_VOLUME -= 0.1
+                    pygame.mixer.music.set_volume(CURRENT_VOLUME)
+
+
 if __name__ == '__main__':
     pygame.init()
     size = width, height = 450, 550
@@ -108,6 +127,9 @@ if __name__ == '__main__':
     button_sprites = pygame.sprite.Group()
 
     back_ground_sprites_1 = pygame.sprite.Group()
+
+    options_buttons_sprites = pygame.sprite.Group()
+
     back_ground_1 = pygame.sprite.Sprite(back_ground_sprites_1)
     back_ground_1.image = load_image('back_ground_1.png')
     back_ground_1.rect = back_ground_1.image.get_rect()
@@ -122,6 +144,12 @@ if __name__ == '__main__':
     options_button.set_coords(150, 150)
     exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
     exit_button.set_coords(150, 350)
+
+    sound_up_button = OptionsButton("sound.png", "up", options_buttons_sprites)
+    sound_up_button.set_coords(50, 50)
+
+    sound_down_button = OptionsButton("sound_off.png", "down", options_buttons_sprites)
+    sound_down_button.set_coords(250, 50)
 
     timer = pygame.time.Clock()
     main_menu()
