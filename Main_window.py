@@ -2,7 +2,7 @@ import pygame
 import os
 import sys
 
-CURRENT_VOLUME = 0.1
+CURRENT_VOLUME = 0.5
 
 
 # ну тут сверху надеюсь все понятно
@@ -35,7 +35,7 @@ def terminate():
 
 def main_menu():
     pygame.mixer.music.load("data/Mantis.mp3")
-    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.set_volume(CURRENT_VOLUME)
     pygame.mixer.music.play()
     mouse_pos = (0, 0)
     while True:
@@ -55,11 +55,18 @@ def main_menu():
 
 
 def option_window():
+    mouse_pos = (0, 0)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-        screen.fill(pygame.Color("mediumblue"))
+            if event.type == pygame.MOUSEMOTION:
+                mouse_pos = event.pos
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                options_buttons_sprites.update(mouse_pos, event)
+        options_buttons_sprites.update(mouse_pos)
+        screen.fill("mediumblue")
+        options_buttons_sprites.draw(screen)
         pygame.display.flip()
 
 
@@ -109,15 +116,15 @@ class OptionsButton(MainMenuButton):
         self.sound = sound
 
     def update(self, mouse_pos, *args):
-        if self.rect.collidepoint(mouse_pos):
+        global CURRENT_VOLUME
+        if self.rect.collidepoint(mouse_pos) and args and args[0].type == pygame.MOUSEBUTTONDOWN:
             if self.sound == 'up':
-                if CURRENT_VOLUME < 1:
+                if int(CURRENT_VOLUME * 10) < 11:
                     CURRENT_VOLUME += 0.1
-                    pygame.mixer.music.set_volume(CURRENT_VOLUME)
             else:
-                if CURRENT_VOLUME > 0.1:
+                if int(CURRENT_VOLUME * 10) > 0:
                     CURRENT_VOLUME -= 0.1
-                    pygame.mixer.music.set_volume(CURRENT_VOLUME)
+            pygame.mixer.music.set_volume(CURRENT_VOLUME)
 
 
 if __name__ == '__main__':
