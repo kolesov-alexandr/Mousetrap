@@ -226,7 +226,7 @@ class Button(MainSprite):
             self.image = load_image(self.names[0])
 
 
-class OptionsButton(MainMenuButton):
+class OptionsButton(MainSprite):
     def __init__(self, name, sound, *group):
         super().__init__(name, *group)
         self.sound = sound
@@ -309,19 +309,18 @@ if __name__ == '__main__':
     cat = Cat()
     cat.set_coords(100, 300)
 
-    play_button = PlayGameButton(('play1.png', 'play2.png', 'play3.png'), 'play', button_sprites)
+    play_button = Button(('play1.png', 'play2.png', 'play3.png'), 'play', button_sprites)
     play_button.set_coords(150, 50)
 
-    options_button = PlayGameButton(('options1.png', 'options2.png', 'options3.png'), 'options',
-                                    button_sprites)
+    options_button = Button(('options1.png', 'options2.png', 'options3.png'), 'options',
+                            button_sprites)
     options_button.set_coords(150, 150)
 
     records_button = Button(('records1.png', 'records2.png', 'records3.png'), 'records',
                             button_sprites)
-    records_button.set_coords(150, 300)
+    records_button.set_coords(150, 250)
 
-
-    exit_button = PlayGameButton(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
+    exit_button = Button(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
     exit_button.set_coords(150, 350)
 
     sound_up_button = OptionsButton("sound.png", "up", options_buttons_sprites)
