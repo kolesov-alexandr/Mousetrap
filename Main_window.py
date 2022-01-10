@@ -88,7 +88,7 @@ def game():
                     counter += 1
         obstacle_sprites.update()
         cat_sprites.update(up, down)
-        screen.fill(pygame.Color("mediumblue"))
+        screen.fill(pygame.Color("magenta"))
         game_object_sprites.draw(screen)
         cat_sprites.draw(screen)
         pygame.display.flip()
@@ -99,7 +99,7 @@ def records():
     # вывод таблицы с рекордами
     con = sqlite3.connect('data/records.sqlite')
     cur = con.cursor()
-    screen.fill(pygame.Color("mediumblue"))
+    screen.fill(pygame.Color("magenta"))
     result = list(sorted(cur.execute("""SELECT name, kol_vo_score FROM records
             ORDER BY kol_vo_score DESC""").fetchall(), key=lambda elem: elem[1]))
 
@@ -156,7 +156,7 @@ def loading_window():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-        if count < 5:
+        if count < 3:
             count += 1 * timer.tick() / 1000
         else:
             main_menu()
