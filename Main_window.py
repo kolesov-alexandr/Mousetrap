@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import sqlite3
 
 
 # ну тут сверху надеюсь все понятно
@@ -51,6 +52,44 @@ def main_menu():
         timer.tick(7)
 
 
+def records():
+    # вывод таблицы с рекордами
+    con = sqlite3.connect('data/records.sqlite')
+    cur = con.cursor()
+    result = list(sorted(cur.execute("""SELECT name, kol_vo_score FROM records
+            ORDER BY kol_vo_score DESC""").fetchall(), key=lambda elem: elem[1]))
+
+    font = pygame.font.Font(None, 30)
+    font_header = pygame.font.Font(None, 40)
+    header_player = font_header.render("Игрок", True, pygame.Color('cyan'))
+    screen.blit(header_player, (95, 45))
+
+    header_score = font_header.render("Очки", True, pygame.Color('cyan'))
+    screen.blit(header_score, (95 + header_player.get_width() + 115, 45))
+    height0 = 45 + 50
+    for i in range(10):
+        if i < len(result):
+            player = font.render(result[i][0], True, pygame.Color('cyan'))
+            screen.blit(player, (95 + 15, height0))
+
+            score = font.render('{:04}'.format(result[i][1]), True, pygame.Color('cyan'))
+            screen.blit(score, (95 + header_player.get_width() + 115 + 12, height0))
+
+        else:
+            player = font.render('NON', True, pygame.Color('cyan'))
+            screen.blit(player, (95 + 15, height0))
+
+            score = font.render('{:04}'.format(0), True, pygame.Color('cyan'))
+            screen.blit(score, (95 + header_player.get_width() + 115 + 12, height0))
+        height0 += 41
+    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                con.close()
+                terminate()
+
+
 class MainMenuButton(pygame.sprite.Sprite):
     # это класс для кнопок в главном меню
     # для кнопок должно быть 2 картинки, одна светлая, другая темнее
@@ -85,6 +124,8 @@ class PlayGameButton(MainMenuButton):
             if args and args[0].type == pygame.MOUSEBUTTONDOWN:
                 if self.next_window == 'exit':
                     terminate()
+                if self.next_window == 'records':
+                    records()
         else:
             self.image = load_image(self.names[0])
 
