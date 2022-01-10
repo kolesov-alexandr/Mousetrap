@@ -97,6 +97,7 @@ def records():
     # вывод таблицы с рекордами
     con = sqlite3.connect('data/records.sqlite')
     cur = con.cursor()
+    screen.fill(pygame.Color("mediumblue"))
     result = list(sorted(cur.execute("""SELECT name, kol_vo_score FROM records
             ORDER BY kol_vo_score DESC""").fetchall(), key=lambda elem: elem[1]))
 
@@ -205,7 +206,8 @@ class Obstacle(MainSprite):
 
     def update(self, *orders):
         self.rect = self.rect.move(-20, 0)
-        if pygame.sprite.spritecollideany(self, cat_sprites) and (cat.status()[0] or cat.status()[1]):
+        if pygame.sprite.spritecollideany(self, cat_sprites) and (cat.status()[0] or
+                                                                  cat.status()[1]):
             self.kill()
 
 
@@ -229,12 +231,15 @@ if __name__ == '__main__':
     cat = Cat()
     cat.set_coords(100, 300)
 
-    play_button = Button(('play1.png', 'play2.png', 'play3.png'), 'play',
-                         button_sprites)
+    play_button = Button(('play1.png', 'play2.png', 'play3.png'), 'play', button_sprites)
     play_button.set_coords(150, 100)
 
     exit_button = Button(('exit1.png', 'exit2.png', 'exit3.png'), 'exit', button_sprites)
     exit_button.set_coords(150, 400)
+
+    records_button = Button(('records1.png', 'records2.png', 'records3.png'), 'records',
+                            button_sprites)
+    records_button.set_coords(150, 300)
 
     timer = pygame.time.Clock()
     main_menu()
