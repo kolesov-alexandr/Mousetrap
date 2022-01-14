@@ -37,7 +37,7 @@ def terminate():
 def main_menu():
     pygame.mixer.music.load("data/Mantis.mp3")
     pygame.mixer.music.set_volume(CURRENT_VOLUME)
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
     mouse_pos = (0, 0)
     screen.fill(pygame.Color("magenta"))
     button_sprites.draw(screen)
