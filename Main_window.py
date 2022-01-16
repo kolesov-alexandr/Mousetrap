@@ -103,8 +103,8 @@ def records():
     con = sqlite3.connect('data/records.sqlite')
     cur = con.cursor()
     screen.fill(pygame.Color("magenta"))
-    result = list(sorted(cur.execute("""SELECT name, kol_vo_score FROM records
-            ORDER BY kol_vo_score DESC""").fetchall(), key=lambda elem: elem[1]))
+    result = cur.execute("""SELECT name, kol_vo_score FROM records
+            ORDER BY kol_vo_score DESC""").fetchall()
 
     font = pygame.font.Font(None, 30)
     font_header = pygame.font.Font(None, 40)
