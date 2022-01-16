@@ -182,6 +182,22 @@ def option_window():
         pygame.display.flip()
 
 
+def game_over():
+    font = pygame.font.Font(None, 30)
+    text = font.render("Увы, вы проиграли(", True, pygame.Color('red'))
+    screen.blit(text, (130, 50))
+    image = load_image('game_over.png')
+    image_rect = 75, 125
+    image = pygame.transform.scale(image, (300, 300))
+    screen.blit(image, image_rect)
+    pygame.display.flip()
+    pygame.display.update()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+
+
 class MainSprite(pygame.sprite.Sprite):
     # это класс для кнопок в главном меню
     # для кнопок должно быть 2 картинки, одна светлая, другая темнее
