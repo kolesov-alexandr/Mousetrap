@@ -182,6 +182,21 @@ def option_window():
         pygame.display.flip()
 
 
+def winner_window():
+    font = pygame.font.Font(None, 30)
+    text = font.render("Поздравляю, вы прошли уровень!", True, pygame.Color('red'))
+    screen.blit(text, (55, 50))
+    image = load_image('win.png')
+    image_rect = 75, 125
+    screen.blit(image, image_rect)
+    pygame.display.flip()
+    pygame.display.update()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+
+
 class MainSprite(pygame.sprite.Sprite):
     # это класс для кнопок в главном меню
     # для кнопок должно быть 2 картинки, одна светлая, другая темнее
