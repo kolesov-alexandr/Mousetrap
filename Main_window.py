@@ -4,7 +4,10 @@ import sys
 import sqlite3
 
 CURRENT_VOLUME = 0.5
-
+FPS = 60
+SCORE = 0
+DOWN = 0
+UP = 1
 
 # ну тут сверху надеюсь все понятно
 
@@ -87,15 +90,16 @@ def game():
                     down = False
             if event.type == obstacle_event:
                 if counter < counter_max:
-                    create_obstacle(level, counter)
+                    create_score_point(level, counter)
                     counter += 1
+        score_point_sprites.update()
         obstacle_sprites.update()
         cat_sprites.update(up, down)
         screen.fill(pygame.Color("magenta"))
         game_object_sprites.draw(screen)
         cat_sprites.draw(screen)
         pygame.display.flip()
-        timer.tick(60)
+        timer.tick(FPS)
 
 
 def records():
@@ -275,23 +279,25 @@ class OptionsButton(MainSprite):
 
 
 class Cat(MainSprite):
-    def __init__(self):
-        super().__init__('cat.png', game_object_sprites, cat_sprites)
+    def __init__(self, *args):
+        super().__init__('cat.png', game_object_sprites, cat_sprites, *args)
         self.up = False
         self.down = False
+        self.x, self.y1, self.y2 = 100, 300, 100
+        self.start = self.y1
 
     def update(self, *orders):
         if orders[0]:
-            self.set_coords(100, 100)
+            self.set_coords(self.x, self.y2)
             self.up = True
             self.down = False
 
         elif orders[1]:
-            self.set_coords(100, 300)
+            self.set_coords(self.x, self.y1)
             self.up = False
             self.down = True
         else:
-            self.set_coords(100, 300)
+            self.set_coords(self.x, self.start)
             self.up = False
             self.down = False
 
@@ -299,23 +305,58 @@ class Cat(MainSprite):
         return self.up, self.down
 
 
-class Obstacle(MainSprite):
+class ScorePoint(MainSprite):
     def __init__(self, pos):
-        super().__init__('obstacle.png', game_object_sprites, obstacle_sprites)
+        super().__init__('score_point.png', game_object_sprites, score_point_sprites)
         self.set_coords(pos[0], pos[1])
 
     def update(self, *orders):
-        self.rect = self.rect.move(-20, 0)
-        if pygame.sprite.spritecollideany(self, cat_sprites) and (cat.status()[0] or
-                                                                  cat.status()[1]):
+        global SCORE
+        speed = -480 / FPS
+        self.rect = self.rect.move(speed, 0)
+        if pygame.sprite.spritecollideany(self, cat_hit_box_sprite) and (cat.status()[0] or
+                                                                         cat.status()[1]):
+            SCORE += 20
+            self.kill()
+        if self.rect.x == 0:
             self.kill()
 
 
-def create_obstacle(level, i):
-    if level[i] == 0:
-        Obstacle((400, 100))
+class CatHitBox(Cat):
+    def __init__(self):
+        super().__init__(cat_hit_box_sprite)
+        self.image = load_image("cat_hit_box.png")
+        self.rect = self.image.get_rect()
+        self.x, self.y1, self.y2 = 150, 386, 150
+        self.start = 350
+
+
+class Obstacle(MainSprite):
+    def __init__(self, score_point_status):
+        super().__init__('obstacle.png', game_object_sprites, obstacle_sprites)
+        self.status = (score_point_status + 1) % 2
+        if self.status:
+            self.image = load_image('obstacle1.png')
+            self.rect = self.image.get_rect()
+            self.set_coords(400, 300)
+        else:
+            self.image = load_image('obstacle2.png')
+            self.rect = self.image.get_rect()
+            self.set_coords(400, 150)
+
+    def update(self):
+        speed = -480 / FPS
+        self.rect = self.rect.move(speed, 0)
+        if pygame.sprite.spritecollideany(self, cat_hit_box_sprite):
+            cat.kill()
+
+
+def create_score_point(level, i):
+    if level[i] == DOWN:
+        ScorePoint((400, 100))
     else:
-        Obstacle((400, 300))
+        ScorePoint((400, 300))
+    Obstacle(level[i])
 
 
 if __name__ == '__main__':
@@ -325,11 +366,14 @@ if __name__ == '__main__':
     screen.fill(pygame.Color("magenta"))
 
     button_sprites = pygame.sprite.Group()
-    game_object_sprites = pygame.sprite.Group()
-    cat_sprites = pygame.sprite.Group()
-    obstacle_sprites = pygame.sprite.Group()
     back_ground_sprites_1 = pygame.sprite.Group()
     options_buttons_sprites = pygame.sprite.Group()
+
+    game_object_sprites = pygame.sprite.Group()
+    cat_sprites = pygame.sprite.Group()
+    score_point_sprites = pygame.sprite.Group()
+    cat_hit_box_sprite = pygame.sprite.Group()
+    obstacle_sprites = pygame.sprite.Group()
 
     back_ground_1 = pygame.sprite.Sprite(back_ground_sprites_1)
     back_ground_1.image = load_image('back_ground_1.png')
@@ -339,6 +383,7 @@ if __name__ == '__main__':
 
     cat = Cat()
     cat.set_coords(100, 300)
+    cat_hit_box = CatHitBox()
 
     play_button = Button(('play1.png', 'play2.png', 'play3.png'), 'play', button_sprites)
     play_button.set_coords(150, 50)
