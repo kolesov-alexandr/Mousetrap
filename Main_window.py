@@ -8,6 +8,8 @@ FPS = 60
 SCORE = 0
 DOWN = 0
 UP = 1
+OPTION_WINDOW_OPEN = True
+RECORDS_WINDOW_OPEN = True
 
 # ну тут сверху надеюсь все понятно
 
@@ -134,26 +136,35 @@ def records():
             screen.blit(score, (95 + header_player.get_width() + 115 + 12, height0))
         height0 += 41
     pygame.display.flip()
-    while True:
+    mouse_pos = (0, 0)
+    while RECORDS_WINDOW_OPEN:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 con.close()
                 terminate()
+            if event.type == pygame.MOUSEMOTION:
+                mouse_pos = event.pos
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                options_buttons_sprites.update(mouse_pos, event)
+
+        records_button_sprite.update(mouse_pos)
+        records_button_sprite.draw(screen)
+        pygame.display.flip()
 
 
 def loading_window():
     rabbit = load_image("rabbit.png")
-    screen.blit(rabbit, (50, 100))
+    screen.blit(rabbit, (0, 0))
     font = pygame.font.Font(None, 30)
-    text1 = font.render("Wonderland Engine", True, pygame.Color("yellow"))
+    text1 = font.render("Wonderland Engine", True, pygame.Color("black"))
     text1_x = 250
     text1_y = 200
     screen.blit(text1, (text1_x, text1_y))
-    text2 = font.render("X", True, pygame.Color("yellow"))
+    text2 = font.render("X", True, pygame.Color("black"))
     text2_x = text1_x + text1.get_width() // 2 - text2.get_width() // 2
     text2_y = text1_y + 50
     screen.blit(text2, (text2_x, text2_y))
-    text3 = font.render("PyGame", True, pygame.Color("yellow"))
+    text3 = font.render("PyGame", True, pygame.Color("black"))
     text3_x = text2_x + text2.get_width() // 2 - text3.get_width() // 2
     text3_y = text2_y + 50
     screen.blit(text3, (text3_x, text3_y))
@@ -172,7 +183,7 @@ def loading_window():
 
 def option_window():
     mouse_pos = (0, 0)
-    while True:
+    while OPTION_WINDOW_OPEN:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
@@ -182,6 +193,7 @@ def option_window():
                 options_buttons_sprites.update(mouse_pos, event)
         options_buttons_sprites.update(mouse_pos)
         screen.fill("magenta")
+        back_ground_sprites_1.draw(screen)
         options_buttons_sprites.draw(screen)
         pygame.display.flip()
 
@@ -242,6 +254,8 @@ class Button(MainSprite):
         self.stack = 0
 
     def update(self, mouse_pos, *args):
+        global OPTION_WINDOW_OPEN
+        global RECORDS_WINDOW_OPEN
         if self.rect.collidepoint(mouse_pos):
             if self.stack == 0:
                 self.image = load_image(self.names[1])
@@ -254,8 +268,10 @@ class Button(MainSprite):
                 if self.next_window == 'play':
                     game()
                 if self.next_window == 'records':
+                    RECORDS_WINDOW_OPEN = True
                     records()
                 if self.next_window == 'options':
+                    OPTION_WINDOW_OPEN = True
                     option_window()
         else:
             self.image = load_image(self.names[0])
@@ -267,14 +283,19 @@ class OptionsButton(MainSprite):
         self.sound = sound
 
     def update(self, mouse_pos, *args):
+        global OPTION_WINDOW_OPEN
         global CURRENT_VOLUME
+        global RECORDS_WINDOW_OPEN
         if self.rect.collidepoint(mouse_pos) and args and args[0].type == pygame.MOUSEBUTTONDOWN:
             if self.sound == 'up':
                 if int(CURRENT_VOLUME * 10) < 11:
                     CURRENT_VOLUME += 0.1
-            else:
+            elif self.sound == 'down':
                 if int(CURRENT_VOLUME * 10) > 0:
                     CURRENT_VOLUME -= 0.1
+            else:
+                OPTION_WINDOW_OPEN = False
+                RECORDS_WINDOW_OPEN = False
             pygame.mixer.music.set_volume(CURRENT_VOLUME)
 
 
@@ -374,6 +395,7 @@ if __name__ == '__main__':
     score_point_sprites = pygame.sprite.Group()
     cat_hit_box_sprite = pygame.sprite.Group()
     obstacle_sprites = pygame.sprite.Group()
+    records_button_sprite = pygame.sprite.Group()
 
     back_ground_1 = pygame.sprite.Sprite(back_ground_sprites_1)
     back_ground_1.image = load_image('back_ground_1.png')
@@ -404,6 +426,9 @@ if __name__ == '__main__':
 
     sound_down_button = OptionsButton("sound_off.png", "down", options_buttons_sprites)
     sound_down_button.set_coords(250, 50)
+
+    exit_button = OptionsButton("arrow_left.png", "exit", options_buttons_sprites, records_button_sprite)
+    exit_button.set_coords(40, 480)
 
     timer = pygame.time.Clock()
     loading_window()
