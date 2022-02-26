@@ -3,7 +3,6 @@ import os
 import sys
 import sqlite3
 
-CURRENT_VOLUME = 0.5
 FPS = 60
 SCORE = 0
 DOWN = 0
@@ -38,8 +37,11 @@ def terminate():
 
 
 def main_menu():
+    with open("volume.txt") as volume_file:
+        strings = [elem.strip() for elem in volume_file.readlines()]
+    current_volume = float(strings[0])
     pygame.mixer.music.load("data/Mantis.mp3")
-    pygame.mixer.music.set_volume(CURRENT_VOLUME)
+    pygame.mixer.music.set_volume(current_volume)
     pygame.mixer.music.play(-1)
     mouse_pos = (0, 0)
     screen.fill(pygame.Color("magenta"))
@@ -267,15 +269,19 @@ class OptionsButton(MainSprite):
         self.sound = sound
 
     def update(self, mouse_pos, *args):
-        global CURRENT_VOLUME
+        with open("volume.txt") as volume_file:
+            strings = [elem.strip() for elem in volume_file.readlines()]
+        current_volume = float(strings[0])
         if self.rect.collidepoint(mouse_pos) and args and args[0].type == pygame.MOUSEBUTTONDOWN:
             if self.sound == 'up':
-                if int(CURRENT_VOLUME * 10) < 11:
-                    CURRENT_VOLUME += 0.1
+                if int(current_volume * 10) < 10:
+                    current_volume = round(current_volume + 0.1, 1)
             else:
-                if int(CURRENT_VOLUME * 10) > 0:
-                    CURRENT_VOLUME -= 0.1
-            pygame.mixer.music.set_volume(CURRENT_VOLUME)
+                if int(current_volume * 10) > 1:
+                    current_volume = round(current_volume - 0.1, 1)
+            pygame.mixer.music.set_volume(current_volume)
+            with open("volume.txt", "w") as volume_file:
+                volume_file.write(str(current_volume))
 
 
 class Cat(MainSprite):
