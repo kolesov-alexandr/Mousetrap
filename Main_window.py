@@ -82,7 +82,6 @@ def game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            '''
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     up = True
@@ -93,6 +92,7 @@ def game():
                     up = False
                 if event.key == pygame.K_DOWN:
                     down = False
+            '''
             if event.type == obstacle_event:
                 if counter < counter_max:
                     create_score_point(level, counter)
@@ -105,6 +105,7 @@ def game():
         back_ground_sprites_2.draw(screen)
         game_object_sprites.draw(screen)
         cat_sprites.draw(screen)
+        taiko_sprite.draw(screen)
         pygame.display.flip()
         timer.tick(FPS)
 
@@ -374,6 +375,12 @@ class Obstacle(MainSprite):
             cat.kill()
 
 
+class Taiko(MainSprite):
+    def __init__(self, *args):
+        super().__init__('taiko_empty.png', game_object_sprites, taiko_sprite, *args)
+        self.set_coords(50, 15)
+
+
 def create_score_point(level, i):
     if level[i] == DOWN:
         ScorePoint((400, 100))
@@ -399,6 +406,7 @@ if __name__ == '__main__':
     cat_hit_box_sprite = pygame.sprite.Group()
     obstacle_sprites = pygame.sprite.Group()
     records_button_sprite = pygame.sprite.Group()
+    taiko_sprite = pygame.sprite.Group()
 
     back_ground_1 = pygame.sprite.Sprite(back_ground_sprites_1)
     back_ground_1.image = load_image('back_ground_1.png')
@@ -411,6 +419,15 @@ if __name__ == '__main__':
     back_ground_2.rect = back_ground_1.image.get_rect()
     back_ground_2.rect.x = 0
     back_ground_2.rect.y = 0
+
+    taiko_field = pygame.sprite.Sprite(game_object_sprites)
+    taiko_field.image = load_image('circle_field.png')
+    taiko_field.rect = taiko_field.image.get_rect()
+    taiko_field.rect.x = 0
+    taiko_field.rect.y = 15
+
+    taiko = Taiko()
+
 
     cat = Cat()
     cat.set_coords(100, 300)
