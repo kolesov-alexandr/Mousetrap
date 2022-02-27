@@ -11,6 +11,8 @@ DOWN = 0
 UP = 1
 OPTION_WINDOW_OPEN = False
 RECORDS_WINDOW_OPEN = False
+VACABULARE = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+              'V', 'W', 'X', 'Y', 'Z']
 
 RED_BUTTON = pygame.K_z
 BLUE_BUTTON = pygame.K_x
@@ -300,19 +302,77 @@ def game_over():
                 terminate()
 
 
-def winner_window():
-    font = pygame.font.Font(None, 30)
-    text = font.render("Поздравляю, вы прошли уровень!", True, pygame.Color('red'))
-    screen.blit(text, (55, 50))
-    image = load_image('win.png')
-    image_rect = 75, 125
-    screen.blit(image, image_rect)
-    pygame.display.flip()
-    pygame.display.update()
+def end_window():
+    global screen, SCORE, VACABULARE
+    screen = pygame.display.set_mode(size)
+    row = 0
+    screen.fill('black')
+    font3 = pygame.font.Font(None, 30)
+    font = pygame.font.Font(None, 70)
+    text1 = font.render("GAME OVER", True, pygame.Color("white"))
+    screen.blit(text1, (80, 23))
+    font1 = pygame.font.Font(None, 50)
+    text2 = font1.render("YOUR SCORE:", True, pygame.Color("white"))
+    screen.blit(text2, (110, 80))
+    text3 = font1.render(str(SCORE), True, pygame.Color("white"))
+    screen.blit(text3, (210, 135))
+    text4 = font1.render("PLEASE,", True, pygame.Color("white"))
+    screen.blit(text4, (150, 190))
+    text5 = font1.render("WRITE YOUR NICKNAME", True, pygame.Color("white"))
+    screen.blit(text5, (14, 230))
+    font2 = pygame.font.Font(None, 100)
+    text6 = font2.render('_', True, pygame.Color("white"))
+    screen.blit(text6, (140, 300))
+    screen.blit(text6, (200, 300))
+    screen.blit(text6, (260, 300))
+    text10 = font3.render('UNFAMILIAR SYMBOL', True, pygame.Color("white"))
+    name = ''
+    the_end = False
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+            if event.type == pygame.KEYDOWN:
+                if row == 0:
+                    try:
+                        text7 = font2.render(VACABULARE[event.key - 97], True, pygame.Color("white"))
+                        screen.blit(text7, (137, 297))
+                        row += 1
+                        pygame.draw.rect(screen, pygame.Color("black"), (127,500,
+                                                               215, 530))
+                        name += VACABULARE[event.key - 97]
+                    except Exception:
+                        screen.blit(text10, (127, 500))
+                elif row == 1:
+                    try:
+                        text8 = font2.render(VACABULARE[event.key - 97], True, pygame.Color("white"))
+                        screen.blit(text8, (197, 297))
+                        row += 1
+                        pygame.draw.rect(screen, pygame.Color("black"), (127, 500,
+                                                                       215, 530))
+                        name += VACABULARE[event.key - 97]
+                    except Exception:
+                        screen.blit(text10, (127, 500))
+                elif row == 2:
+                    try:
+                        text9 = font2.render(VACABULARE[event.key - 97], True, pygame.Color("white"))
+                        screen.blit(text9, (257, 297))
+                        row += 1
+                        pygame.draw.rect(screen, pygame.Color("black"), (127, 500,
+                                                                       215, 530))
+                        name += VACABULARE[event.key - 97]
+                        con = sqlite3.connect('data/records.sqlite')
+                        cur = con.cursor()
+                        result = cur.execute(f"""INSERT INTO records(name,kol_vo_score) VALUES('{name}',{SCORE})""")
+                        con.commit()
+                        con.close()
+                        the_end = True
+                    except Exception:
+                        screen.blit(text10, (127, 500))
+        if the_end:
+            break
+        pygame.display.flip()
+        timer.tick(FPS)
 
 
 class MainSprite(pygame.sprite.Sprite):
@@ -352,7 +412,7 @@ class Button(MainSprite):
                 if self.next_window == 'exit':
                     terminate()
                 if self.next_window == 'play':
-                    game()
+                    end_window()
                 if self.next_window == 'records':
                     RECORDS_WINDOW_OPEN = True
                     records()
