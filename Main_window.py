@@ -10,6 +10,11 @@ UP = 1
 OPTION_WINDOW_OPEN = False
 RECORDS_WINDOW_OPEN = False
 
+RED_BUTTON = pygame.K_z
+BLUE_BUTTON = pygame.K_x
+
+NOTES = ["don.png", "kacu.png"]
+
 # ну тут сверху надеюсь все понятно
 
 
@@ -78,35 +83,39 @@ def game():
 
     up = False
     down = False
+    odd = True
+    color = None
     while True:
+        if odd:
+            color = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    up = True
-                if event.key == pygame.K_DOWN:
-                    down = True
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_UP:
-                    up = False
-                if event.key == pygame.K_DOWN:
-                    down = False
-            '''
+                if event.key == RED_BUTTON:
+                    color = 'red'
+                if event.key == BLUE_BUTTON:
+                    color = 'blue'
+            # if event.type == pygame.KEYUP:
+            #     if event.key == RED_BUTTON:
+            #         color = None
+            #     if event.key == BLUE_BUTTON:
+            #         color = None
             if event.type == obstacle_event:
                 if counter < counter_max:
-                    create_score_point(level, counter)
+                    create_note(NOTES[level[counter]])
                     counter += 1
-            '''
         score_point_sprites.update()
         obstacle_sprites.update()
         cat_sprites.update(up, down)
+        taiko_sprite.update(color)
         screen.fill(pygame.Color("magenta"))
         back_ground_sprites_2.draw(screen)
         game_object_sprites.draw(screen)
         cat_sprites.draw(screen)
         taiko_sprite.draw(screen)
         pygame.display.flip()
+        odd = not odd
         timer.tick(FPS)
 
 
@@ -355,38 +364,43 @@ class ScorePoint(MainSprite):
             self.kill()
 
 
-class Obstacle(MainSprite):
-    def __init__(self, score_point_status):
-        super().__init__('obstacle.png', game_object_sprites, obstacle_sprites)
-        self.status = (score_point_status + 1) % 2
-        if self.status:
-            self.image = load_image('obstacle1.png')
-            self.rect = self.image.get_rect()
-            self.set_coords(400, 300)
-        else:
-            self.image = load_image('obstacle2.png')
-            self.rect = self.image.get_rect()
-            self.set_coords(400, 150)
+class Note(MainSprite):
+    def __init__(self, note_image):
+        super().__init__(note_image, game_object_sprites, obstacle_sprites)
+        self.note = note_image[:-4]
+        self.set_coords(445, 25)
 
     def update(self):
+        global SCORE
         speed = -480 / FPS
         self.rect = self.rect.move(speed, 0)
-        if pygame.sprite.spritecollideany(self, cat_hit_box_sprite):
-            cat.kill()
+        if (pygame.sprite.spritecollideany(self, taiko_sprite) and ((self.note == 'kacu' and taiko.stance == 'blue')
+           or (self.note == 'don' and taiko.stance == 'red'))):
+            SCORE += 20
+            self.kill()
+        if self.rect.x <= 0:
+            self.kill()
 
 
 class Taiko(MainSprite):
     def __init__(self, *args):
         super().__init__('taiko_empty.png', game_object_sprites, taiko_sprite, *args)
         self.set_coords(50, 15)
+        self.stance = None
+
+    def update(self, color):
+        self.stance = color
+        if color == 'blue':
+            self.image = load_image('taiko_blue.png')
+        elif color == 'red':
+            self.image = load_image('taiko_red.png')
+        else:
+            self.image = load_image('taiko_empty.png')
+            self.stance = None
 
 
-def create_score_point(level, i):
-    if level[i] == DOWN:
-        ScorePoint((400, 100))
-    else:
-        ScorePoint((400, 300))
-    Obstacle(level[i])
+def create_note(note):
+    Note(note)
 
 
 if __name__ == '__main__':
@@ -427,7 +441,6 @@ if __name__ == '__main__':
     taiko_field.rect.y = 15
 
     taiko = Taiko()
-
 
     cat = Cat()
     cat.set_coords(100, 300)
