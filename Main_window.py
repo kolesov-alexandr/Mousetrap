@@ -17,6 +17,7 @@ BLUE_BUTTON = pygame.K_x
 
 NOTES = ["don.png", "kacu.png"]
 
+
 # ну тут сверху надеюсь все понятно
 
 
@@ -191,31 +192,33 @@ def records():
     # вывод таблицы с рекордами
     con = sqlite3.connect('data/records.sqlite')
     cur = con.cursor()
-    screen.fill(pygame.Color("magenta"))
+    screen2 = pygame.display.set_mode(size)
+    back_ground_sprites_1.draw(screen2)
+    screen.blit(screen2, (0, 0))
     result = cur.execute("""SELECT name, kol_vo_score FROM records
             ORDER BY kol_vo_score DESC""").fetchall()
 
     font = pygame.font.Font(None, 30)
     font_header = pygame.font.Font(None, 40)
-    header_player = font_header.render("Игрок", True, pygame.Color('cyan'))
+    header_player = font_header.render("Игрок", True, pygame.Color('dark blue'))
     screen.blit(header_player, (95, 45))
 
-    header_score = font_header.render("Очки", True, pygame.Color('cyan'))
+    header_score = font_header.render("Очки", True, pygame.Color('dark blue'))
     screen.blit(header_score, (95 + header_player.get_width() + 115, 45))
     height0 = 45 + 50
     for i in range(10):
         if i < len(result):
-            player = font.render(result[i][0], True, pygame.Color('cyan'))
+            player = font.render(result[i][0], True, pygame.Color('dark blue'))
             screen.blit(player, (95 + 15, height0))
 
-            score = font.render('{:04}'.format(result[i][1]), True, pygame.Color('cyan'))
+            score = font.render('{:04}'.format(result[i][1]), True, pygame.Color('dark blue'))
             screen.blit(score, (95 + header_player.get_width() + 115 + 12, height0))
 
         else:
-            player = font.render('NON', True, pygame.Color('cyan'))
+            player = font.render('NON', True, pygame.Color('dark blue'))
             screen.blit(player, (95 + 15, height0))
 
-            score = font.render('{:04}'.format(0), True, pygame.Color('cyan'))
+            score = font.render('{:04}'.format(0), True, pygame.Color('dark blue'))
             screen.blit(score, (95 + header_player.get_width() + 115 + 12, height0))
         height0 += 41
     pygame.display.flip()
@@ -425,8 +428,9 @@ class Note(MainSprite):
         global SCORE
         speed = -480 / FPS
         self.rect = self.rect.move(speed, 0)
-        if (pygame.sprite.spritecollideany(self, taiko_hit_box_spr) and ((self.note == 'kacu' and taiko.stance == 'blue')
-           or (self.note == 'don' and taiko.stance == 'red'))):
+        if (pygame.sprite.spritecollideany(self, taiko_hit_box_spr) and (
+                (self.note == 'kacu' and taiko.stance == 'blue')
+                or (self.note == 'don' and taiko.stance == 'red'))):
             SCORE += 20
             self.kill()
         if self.rect.x <= 0:
@@ -526,8 +530,6 @@ if __name__ == '__main__':
     back_button = OptionsButton("arrow_left.png", "exit", options_buttons_sprites,
                                 records_button_sprite)
     back_button.set_coords(40, 480)
-
-
 
     timer = pygame.time.Clock()
     loading_window()
