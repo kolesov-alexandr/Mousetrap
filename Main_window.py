@@ -7,8 +7,8 @@ FPS = 60
 SCORE = 0
 DOWN = 0
 UP = 1
-OPTION_WINDOW_OPEN = True
-RECORDS_WINDOW_OPEN = True
+OPTION_WINDOW_OPEN = False
+RECORDS_WINDOW_OPEN = False
 
 # ну тут сверху надеюсь все понятно
 
@@ -435,8 +435,9 @@ if __name__ == '__main__':
     sound_down_button = OptionsButton("sound_off.png", "down", options_buttons_sprites)
     sound_down_button.set_coords(250, 50)
 
-    exit_button = OptionsButton("arrow_left.png", "exit", options_buttons_sprites, records_button_sprite)
-    exit_button.set_coords(40, 480)
+    back_button = OptionsButton("arrow_left.png", "exit", options_buttons_sprites,
+                                records_button_sprite)
+    back_button.set_coords(40, 480)
 
     timer = pygame.time.Clock()
     loading_window()
