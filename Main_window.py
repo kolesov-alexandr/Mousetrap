@@ -66,7 +66,7 @@ def main_menu():
 
 def game():
     global screen
-    screen = pygame.display.set_mode((600, 500))
+    screen = pygame.display.set_mode((552, 468))
 
     obstacle_event = pygame.USEREVENT + 1
 
@@ -82,6 +82,7 @@ def game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+            '''
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     up = True
@@ -96,10 +97,12 @@ def game():
                 if counter < counter_max:
                     create_score_point(level, counter)
                     counter += 1
+            '''
         score_point_sprites.update()
         obstacle_sprites.update()
         cat_sprites.update(up, down)
         screen.fill(pygame.Color("magenta"))
+        back_ground_sprites_2.draw(screen)
         game_object_sprites.draw(screen)
         cat_sprites.draw(screen)
         pygame.display.flip()
@@ -309,25 +312,26 @@ class OptionsButton(MainSprite):
 class Cat(MainSprite):
     def __init__(self, *args):
         super().__init__('cat.png', game_object_sprites, cat_sprites, *args)
+        self.stack = 0
+        self.run_images = ["cat.png", "cat_2.png", "cat_3.png"]
         self.up = False
         self.down = False
-        self.x, self.y1, self.y2 = 100, 300, 100
-        self.start = self.y1
+        self.set_coords(50, 600)
 
     def update(self, *orders):
         if orders[0]:
-            self.set_coords(self.x, self.y2)
-            self.up = True
-            self.down = False
+            pass
 
         elif orders[1]:
-            self.set_coords(self.x, self.y1)
-            self.up = False
-            self.down = True
+            pass
+
         else:
-            self.set_coords(self.x, self.start)
             self.up = False
             self.down = False
+            self.image = load_image(self.run_images[self.stack // 5])
+            self.rect = self.image.get_rect()
+            self.set_coords(100, 375)
+            self.stack = (self.stack + 1) % 15
 
     def status(self):
         return self.up, self.down
@@ -348,15 +352,6 @@ class ScorePoint(MainSprite):
             self.kill()
         if self.rect.x == 0:
             self.kill()
-
-
-class CatHitBox(Cat):
-    def __init__(self):
-        super().__init__(cat_hit_box_sprite)
-        self.image = load_image("cat_hit_box.png")
-        self.rect = self.image.get_rect()
-        self.x, self.y1, self.y2 = 150, 386, 150
-        self.start = 350
 
 
 class Obstacle(MainSprite):
@@ -395,6 +390,7 @@ if __name__ == '__main__':
 
     button_sprites = pygame.sprite.Group()
     back_ground_sprites_1 = pygame.sprite.Group()
+    back_ground_sprites_2 = pygame.sprite.Group()
     options_buttons_sprites = pygame.sprite.Group()
 
     game_object_sprites = pygame.sprite.Group()
@@ -410,9 +406,14 @@ if __name__ == '__main__':
     back_ground_1.rect.x = 0
     back_ground_1.rect.y = 0
 
+    back_ground_2 = pygame.sprite.Sprite(back_ground_sprites_2)
+    back_ground_2.image = load_image('back_ground_2.png')
+    back_ground_2.rect = back_ground_1.image.get_rect()
+    back_ground_2.rect.x = 0
+    back_ground_2.rect.y = 0
+
     cat = Cat()
     cat.set_coords(100, 300)
-    cat_hit_box = CatHitBox()
 
     play_button = Button(('play1.png', 'play2.png', 'play3.png'), 'play', button_sprites)
     play_button.set_coords(150, 50)
