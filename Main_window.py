@@ -300,13 +300,16 @@ def end_window():
                         name += VOCABULARY[event.key - 97]
                         con = sqlite3.connect('data/records.sqlite')
                         cur = con.cursor()
-                        result = cur.execute(f"""INSERT INTO records(name,kol_vo_score) VALUES('{name}',{SCORE})""")
+                        cur.execute(f"""INSERT INTO records(name,kol_vo_score) VALUES('{name}',{SCORE})""")
                         con.commit()
                         con.close()
                         the_end = True
                     except Exception:
                         screen.blit(text10, (127, 500))
         if the_end:
+            pygame.mixer.music.load("data/main_menu_theme.mp3")
+            pygame.mixer.music.set_volume(VOLUME)
+            pygame.mixer.music.play(-1)
             break
         pygame.display.flip()
         timer.tick(FPS)
