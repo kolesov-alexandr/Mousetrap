@@ -79,8 +79,8 @@ def game():
     global screen
     global VOLUME
     pygame.mixer.music.load("data/m_cot_bezhit_pod_phonk.mp3")
+    pygame.mixer.music.load("data/music1.mp3")
     pygame.mixer.music.set_volume(VOLUME)
-    pygame.mixer.music.play(0)
 
     screen = pygame.display.set_mode((552, 468))
 
@@ -95,55 +95,61 @@ def game():
     third_level = []
     third_timings = []
 
-    level = second_level[:]
-    timings = second_timings[:]
-    # 20
-    for i in range(10):
-        level.pop()
-    counter = 0
-    pred_end = 0
-    counter_max = len(level)
+    all_levels = [first_level[:], second_level[:], third_level[:]]
+    all_timings = [first_timings[:], second_timings[:], third_timings[:]]
 
-    pygame.time.set_timer(obstacle_event, round(timings[counter] * 1000))
+    for i in range(2):
+        pygame.mixer.music.play(0)
+        level = all_levels[i][:]
+        timings = all_timings[i][:]
+        flag = True
+        for j in range(20):
+            level.pop()
+        counter = 0
+        pred_end = 0
+        counter_max = len(level)
 
-    up = False
-    down = False
-    odd = True
-    color = None
-    while True:
-        if odd:
-            color = None
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            if event.type == pygame.KEYDOWN:
-                if event.key == RED_BUTTON:
-                    color = 'red'
-                if event.key == BLUE_BUTTON:
-                    color = 'blue'
-            if event.type == obstacle_event:
-                if counter < counter_max:
-                    create_note(NOTES[level[counter]])
-                    pygame.time.set_timer(obstacle_event, round(timings[counter + 1] * 1000))
-                    counter += 1
-        if counter == counter_max:
-            pred_end += 1
-            if pred_end == 100:
-                end_window()
-                break
-        score_point_sprites.update()
-        obstacle_sprites.update()
-        cat_sprites.update(up, down)
-        taiko_sprite.update(color)
-        screen.fill(pygame.Color("magenta"))
-        back_ground_sprites_2.draw(screen)
-        taiko_hit_box_spr.draw(screen)
-        game_object_sprites.draw(screen)
-        cat_sprites.draw(screen)
-        taiko_sprite.draw(screen)
-        pygame.display.flip()
-        odd = not odd
-        timer.tick(FPS)
+        pygame.time.set_timer(obstacle_event, round(timings[counter] * 1000))
+
+        up = False
+        down = False
+        odd = True
+        color = None
+        while flag:
+            if odd:
+                color = None
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == RED_BUTTON:
+                        color = 'red'
+                    if event.key == BLUE_BUTTON:
+                        color = 'blue'
+                if event.type == obstacle_event:
+                    if counter < counter_max - 1:
+                        create_note(NOTES[level[counter]])
+                        pygame.time.set_timer(obstacle_event, round(timings[counter + 1] * 1000))
+                        counter += 1
+            if counter == counter_max - 1:
+                pred_end += 1
+                if pred_end == 100:
+                    flag = False
+            score_point_sprites.update()
+            obstacle_sprites.update()
+            cat_sprites.update(up, down)
+            taiko_sprite.update(color)
+            screen.fill(pygame.Color("magenta"))
+            back_ground_sprites_2.draw(screen)
+            taiko_hit_box_spr.draw(screen)
+            game_object_sprites.draw(screen)
+            cat_sprites.draw(screen)
+            taiko_sprite.draw(screen)
+            pygame.display.flip()
+            odd = not odd
+            timer.tick(FPS)
+    end_window()
+
 
 
 def records():
