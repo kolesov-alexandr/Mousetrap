@@ -78,8 +78,8 @@ def main_menu():
 def game():
     global screen
     global VOLUME
-    pygame.mixer.music.load("data/m_cot_bezhit_pod_phonk.mp3")
     pygame.mixer.music.load("data/music1.mp3")
+    pygame.mixer.music.load("data/m_cot_bezhit_pod_phonk.mp3")
     pygame.mixer.music.set_volume(VOLUME)
 
     screen = pygame.display.set_mode((552, 468))
