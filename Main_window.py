@@ -78,9 +78,8 @@ def main_menu():
 def game():
     global screen
     global VOLUME
-    pygame.mixer.music.load("data/m_cot_bezhit_pod_phonk.mp3")
-    pygame.mixer.music.load("data/music1.mp3")
     pygame.mixer.music.set_volume(VOLUME)
+    melodies = ["data/music1.mp3", "data/m_cot_bezhit_pod_phonk.mp3"]
 
     screen = pygame.display.set_mode((552, 468))
 
@@ -186,6 +185,7 @@ def game():
     all_timings = [first_timings[:], second_timings[:], third_timings[:]]
 
     for i in range(2):
+        pygame.mixer.music.load(melodies[i])
         pygame.mixer.music.play(0)
         level = all_levels[i][:]
         timings = all_timings[i][:]
